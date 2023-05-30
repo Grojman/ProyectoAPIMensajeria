@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\goro1\\Desktop\\ProyectoJuegoAldeas\\Server\\ProyectoJuegoAldeas.csproj": {}
+    "C:\\Users\\goro1\\Desktop\\ProyectoJuego\\Server\\ProyectoJuegoAldeas.csproj": {}
   },
   "projects": {
-    "C:\\Users\\goro1\\Desktop\\ProyectoJuegoAldeas\\Server\\ProyectoJuegoAldeas.csproj": {
+    "C:\\Users\\goro1\\Desktop\\ProyectoJuego\\Server\\ProyectoJuegoAldeas.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\goro1\\Desktop\\ProyectoJuegoAldeas\\Server\\ProyectoJuegoAldeas.csproj",
+        "projectUniqueName": "C:\\Users\\goro1\\Desktop\\ProyectoJuego\\Server\\ProyectoJuegoAldeas.csproj",
         "projectName": "ProyectoJuegoAldeas",
-        "projectPath": "C:\\Users\\goro1\\Desktop\\ProyectoJuegoAldeas\\Server\\ProyectoJuegoAldeas.csproj",
+        "projectPath": "C:\\Users\\goro1\\Desktop\\ProyectoJuego\\Server\\ProyectoJuegoAldeas.csproj",
         "packagesPath": "C:\\Users\\goro1\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\goro1\\Desktop\\ProyectoJuegoAldeas\\Server\\obj\\",
+        "outputPath": "C:\\Users\\goro1\\Desktop\\ProyectoJuego\\Server\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\goro1\\AppData\\Roaming\\NuGet\\NuGet.Config"
