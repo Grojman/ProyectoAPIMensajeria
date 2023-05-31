@@ -1,4 +1,3 @@
-
 /// <summary>
 /// Example of UserHandler's Implementation
 /// </summary>
@@ -8,7 +7,7 @@ public class StandarUserHandler : UserHandler {
     public override void HandleMessage(in string[] message)
     {
         /*
-            Need to set a structure for messages
+           header/senderId/sendernickname/message
 
             Posible headers:
             
@@ -67,9 +66,9 @@ public class StandarUserHandler : UserHandler {
         //REGISTRAR MENSAJE EN LA CONVERSACION
         dataBaseConection.SaveMessage(userId, conversationId, message.Split(Separator)[3]);
     }
-    private void CreateGroup() {
-        //OBTENER TODOS LOS ID'S DE LAS PERSONAS QUE VAN A PARTICIPAR EN EL GRUPO
+    private void CreateGroup(string[] usersId) {
         //CREAR EL GRUPO EN LA BASE DE DATOS
+        dataBaseConection.SaveGroup(usersId);
         //ESPERAR A LA CONFIRMACIÓN
         //ENVIAR LA NUEVA CONVERSACIÓN A TODOS LOS USUARIOS QUE ESTÉN CONECTADOS
     }
@@ -84,7 +83,8 @@ public class StandarUserHandler : UserHandler {
 
     public override void SendMsg(TcpClient socket, string message) => SendMsg(socket.GetStream(), message);
     public override void SendMsg(string Id, string message) => SendMsg(conectedUsers.Where(n => n.Id.Equals(Id)).First().Stream, message);
-    //STOLEN CODE ASWELL BECAUSE IM DUMB AF
+    
+    //STOLEN CODE
     public override void SendMsg(Stream stream, string msg)
     {
         // NetworkStream stream = client.GetStream();

@@ -8,4 +8,7 @@ public interface IDataBase {
     public string[] GetConversations(string userId);
     public void SaveMessage(string sender, string destination, string message);
     public void SaveGroup(string[] users);
+    public class DataBaseConectionException : Exception {
+        public DataBaseConectionException(string message) : base(message){}
+    } 
 }
