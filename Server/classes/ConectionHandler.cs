@@ -3,7 +3,12 @@ class ConectionHandler {
     readonly int port;
     TcpListener server;
     bool running;
-    public ConectionHandler(in string ip, in int port) {
+    private UserHandler userHandler;
+    public ConectionHandler(in string ip, in int port, UserHandler userHandler) {
+        this.userHandler = userHandler;
+        this.ip = ip;
+        this.port = port;
+
         server = new TcpListener(IPAddress.Parse(ip), port);
         server.Start();
         Console.WriteLine("Server has started on {0}:{1}, Waiting for a connection…", ip, port);
@@ -34,9 +39,52 @@ class ConectionHandler {
             while (!stream.DataAvailable);
             while (client.Available < 3); // match against "get"
             string? message = HandleMessages(client, stream);
-            if (message is not null)
-                Console.WriteLine(message);
+            if (message is not null) {
+                string[] deglosedMessage = message.Split(userHandler.Separator);
+                if(userHandler.UserIsAlreadyConected(client)) userHandler.HandleMessage(deglosedMessage);
+                else HandleMessage(stream, deglosedMessage);
+            }
         }
+    }
+    private void HandleMessage(Stream stream, string[] message) {
+        /*
+            Possible messages:
+            1. Wants to log in
+            2. Wants to register
+
+
+            Even tho there is only 2 options, I rather use a switch block.
+        */
+        switch (message[0]) {
+            case "log-in":
+                LogIn();
+                break;
+            case "sign-in":
+                SignIn();
+                break;
+            default:
+                Console.WriteLine($"Mensaje con cabecera desconocida: {string.Join("", message)}");
+                break;
+        }
+    }
+    private void LogIn() {
+        //COMPROBAR SI EL USUARIO YA ESTÁ CONECTADO
+        //COMPROBAR SI EL USUARIO EXISTE
+        //COMPROBAR SI LAS CREDENCIALES DEL USUARIO SON CORRECTAS
+        //SI TODO LO ANTERIOR ES CORRECTO:
+            //GUARDAR NUEVO USUARIO EN LA LISTA DE USUARIOS CONECTADOS, Y AVISAR AL USUARIO DE QUE SE HA CONECTADO
+        //EN CASO CONTRARIO:
+            //AVISAR DEL ERROR
+    }
+
+    private void SignIn() {
+        //COMPROBAR QUE EL NOMBRE NO EXISTE TODAVÍA
+        //SI ES CORRECTO:
+            //CREAR USUARIO EN LA BASE DE DATOS
+            //AÑADIRLO COMO USUARIO CONECTADO
+            //AVISAR AL CLIENTE DE QUE SE HA REGISTRADO CORRECTAMENTE
+        //EN CASO CONTRARIO:
+            //AVISAR DEL ERROR AL CLIENTE
     }
 
     //NO TENGO NI IDEA DE CÓMO FUNCIONA, ESTÁ COPIADO DE UNA PÁGINA WEB. DEVUELVE NULO SI SE HA PRODUCIDO EL HANDSHAKING O LA MÁSCARA NO ESTÁ PUESTA

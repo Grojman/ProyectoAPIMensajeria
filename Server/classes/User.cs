@@ -1,3 +1,6 @@
+/// <summary>
+/// Data objet to relate User's Id with a socket conection
+/// </summary>
 public class User {
     public readonly string Id;
     public TcpClient Client {get;}

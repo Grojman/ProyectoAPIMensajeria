@@ -4,6 +4,6 @@ global using System.Text;
 global using System.Text.RegularExpressions;
 class Program {
     public static void Main(string[] args) {
-        ConectionHandler ch = new ConectionHandler("127.0.0.1",  14000);
+        var ch = new ConectionHandler("127.0.0.1",  14000, new StandarUserHandler('/'));
     }
 }
