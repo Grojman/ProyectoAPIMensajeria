@@ -42,11 +42,12 @@ class ConectionHandler {
             if (message is not null) {
                 string[] deglosedMessage = message.Split(userHandler.Separator);
                 if(userHandler.UserIsAlreadyConected(client)) userHandler.HandleMessage(deglosedMessage);
-                else HandleMessage(stream, deglosedMessage);
+                else HandleMessage(client, deglosedMessage);
             }
         }
     }
-    private void HandleMessage(Stream stream, string[] message) {
+    private void HandleMessage(TcpClient socket, string[] message) {
+        //HAY QUE PODER MANDAR MENSAJES DE VUELTA EN ALGÚN PUTO LADO JAFKLDJSLAÑFJDLASKÑFJKDLÑASJFLKDÑASJFÑA
         /*
             Possible messages:
             1. Wants to log in
@@ -57,34 +58,47 @@ class ConectionHandler {
         */
         switch (message[0]) {
             case "log-in":
-                LogIn();
+                LogIn(userHandler.dataBaseConection.FromNicknameToId(message[1]), message[2], socket);
                 break;
             case "sign-in":
-                SignIn();
+                SignIn(message[1], message[2], socket);
                 break;
             default:
                 Console.WriteLine($"Mensaje con cabecera desconocida: {string.Join("", message)}");
                 break;
         }
     }
-    private void LogIn() {
-        //COMPROBAR SI EL USUARIO YA ESTÁ CONECTADO
-        //COMPROBAR SI EL USUARIO EXISTE
+    private void LogIn(string Id, string password, TcpClient socket) {
+        //COMPROBAR SI EL USUARIO NO ESTÁ CONECTADO
         //COMPROBAR SI LAS CREDENCIALES DEL USUARIO SON CORRECTAS
+        if (!userHandler.UserIsAlreadyConected(Id) && userHandler.dataBaseConection.CheckCredentials(Id, password.Encrypt())) {
         //SI TODO LO ANTERIOR ES CORRECTO:
             //GUARDAR NUEVO USUARIO EN LA LISTA DE USUARIOS CONECTADOS, Y AVISAR AL USUARIO DE QUE SE HA CONECTADO
+            userHandler.AddUser(Id, socket);
+            //ENVIARLE JUNTO CON EL AVISO EL ID DE SU USUARIO, PARA QUE NO TENER QUE UTILIZAR EL NICKNAME
+            userHandler.SendMsg(socket.GetStream(), $"Tu Id es {Id}");
+        } else {
         //EN CASO CONTRARIO:
             //AVISAR DEL ERROR
+            userHandler.SendMsg(socket.GetStream(), "Las credenciales no son correctas"); 
+        }  
     }
 
-    private void SignIn() {
+    private void SignIn(string Nickname, string Password, TcpClient socket) {
         //COMPROBAR QUE EL NOMBRE NO EXISTE TODAVÍA
+        if (!userHandler.dataBaseConection.UserExists(Nickname)) {
         //SI ES CORRECTO:
             //CREAR USUARIO EN LA BASE DE DATOS
+            userHandler.dataBaseConection.SaveUser(Nickname, Password.Encrypt());
             //AÑADIRLO COMO USUARIO CONECTADO
+            userHandler.AddUser(userHandler.dataBaseConection.FromNicknameToId(Nickname), socket);
             //AVISAR AL CLIENTE DE QUE SE HA REGISTRADO CORRECTAMENTE
+            userHandler.SendMsg(socket, $"El usuario {Nickname} ha sido creado");
+        } else {
         //EN CASO CONTRARIO:
             //AVISAR DEL ERROR AL CLIENTE
+            userHandler.SendMsg(socket.GetStream(), $"El nombre {Nickname} ya está cogido");
+        }
     }
 
     //NO TENGO NI IDEA DE CÓMO FUNCIONA, ESTÁ COPIADO DE UNA PÁGINA WEB. DEVUELVE NULO SI SE HA PRODUCIDO EL HANDSHAKING O LA MÁSCARA NO ESTÁ PUESTA

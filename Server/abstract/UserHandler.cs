@@ -1,9 +1,9 @@
 public abstract class UserHandler {
-    protected IDataBase dataBaseConection;
-    protected LinkedList<User> conectedUsers;
+    public IDataBase dataBaseConection;
+    protected List<User> conectedUsers;
     public char Separator {get;}
     protected UserHandler(in char separator, in IDataBase dataBaseConection) {
-        conectedUsers = new LinkedList<User>();
+        conectedUsers = new List<User>();
         this.dataBaseConection = dataBaseConection;
         Separator = separator;
     }
@@ -13,4 +13,5 @@ public abstract class UserHandler {
     public abstract void SendMsg(string Id, string message);
     public abstract void SendMsg(Stream stream, string message);
     public abstract void SendMsg(TcpClient socket, string message);
+    public abstract void AddUser(in string Id, in TcpClient socket);
 }

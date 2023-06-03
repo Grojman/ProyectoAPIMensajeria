@@ -6,6 +6,6 @@ global using System.Data.SQLite;
 global using System.Security.Cryptography;
 class Program {
     public static void Main(string[] args) {
-        var ch = new ConectionHandler("127.0.0.1",  14000, new StandarUserHandler('/'));
+        var ch = new ConectionHandler("127.0.0.1",  14000, new StandarUserHandler('/', new SQLiteHandler("Chat.db", "GROUPS", "USERS", "MESSAGES")));
     }
 }

@@ -45,7 +45,7 @@ public class StandarUserHandler : UserHandler {
         //OBTENER TODAS LAS CONVERSACIONES
         string[] conversations = dataBaseConection.GetConversations(Id);
         foreach(string c in conversations) {
-            string[] messages = dataBaseConection.GetMessages(c, 0);//¿?¿?¿
+            string[] messages = dataBaseConection.GetMessages(c, 10);//¿?¿?¿
             foreach(string m in messages)
                 SendMsg(Id, m);
         }
@@ -77,12 +77,14 @@ public class StandarUserHandler : UserHandler {
         conectedUsers.Remove(conectedUsers.Where(n => n.Id.Equals(Id)).First());
     }
 
-    public override bool UserIsAlreadyConected(in string Id) => conectedUsers.Select(n => n.Id).Contains(Id);
+    public override bool UserIsAlreadyConected(in string Id) => true; //conectedUsers.Select(n => n.Id).Contains(Id);
 
     public override bool UserIsAlreadyConected(in TcpClient socket) => conectedUsers.Select(n => n.Client).Contains(socket);
 
     public override void SendMsg(TcpClient socket, string message) => SendMsg(socket.GetStream(), message);
     public override void SendMsg(string Id, string message) => SendMsg(conectedUsers.Where(n => n.Id.Equals(Id)).First().Stream, message);
+    public override void AddUser(in string Id, in TcpClient socket) => conectedUsers.Add(new User(Id, socket));
+    
     
     //STOLEN CODE
     public override void SendMsg(Stream stream, string msg)
