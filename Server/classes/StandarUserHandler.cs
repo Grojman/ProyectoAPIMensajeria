@@ -30,32 +30,32 @@ public class StandarUserHandler : UserHandler {
                 SendData(message[1]);
                 break;
             case "snd-msg":
-                break;
-            case "snd-gmsg":
+                SendGroupMsg(message[2], message[1], message[3]);
                 break;
             case "crt-grp":
+                CreateGroup(message.Where((n, c) => c != 0).ToArray());
                 break;
             case "log-out":
+                LogOut(message[1]);
                 break;
             default:
+                Console.WriteLine($"Mensaje desconocido: {string.Join(Separator, message)}");
                 break;
         }
     }
     private void SendData(string Id) {
+        SendMsg(Id, "Enviando mensajes!");
         //OBTENER TODAS LAS CONVERSACIONES
         string[] conversations = dataBaseConection.GetConversations(Id);
         foreach(string c in conversations) {
-            string[] messages = dataBaseConection.GetMessages(c, 10);//¿?¿?¿
-            foreach(string m in messages)
-                SendMsg(Id, m);
-        }
             //DE CADA UNA DE LAS CONVERSACIONES, OBTENER LOS ÚLTIMOS N MENSAJES
             //DEVOLVER TODAS LAS CONVERSACIONES AL USUARIO
+            string[] messages = dataBaseConection.GetMessages(c, 10, Separator);
+            foreach(string m in messages)
+                SendMsg(Id, string.Join(Separator, m));
+        }
     }
     private void SendGroupMsg(string conversationId, string userId, string message) {
-        //HAY QUE ASEGURARSE DE QUÉ RECIBE EN EL PARÁMETRO MESSAGE
-
-
         //PEDIRLE A LA BASE DE DATOS TODOS LOS USUARIOS QUE PARTICIPEN EN LA CONVERSACION
         string[] users = dataBaseConection.FindUsersFromConversation(conversationId, userId);
             //A CADA UNO DE LOS USUARIOS (QUE ESTÉN CONECTADOS), ENVIARLE EL MENSAJE
@@ -64,12 +64,11 @@ public class StandarUserHandler : UserHandler {
                 SendMsg(id, message);
         }
         //REGISTRAR MENSAJE EN LA CONVERSACION
-        dataBaseConection.SaveMessage(userId, conversationId, message.Split(Separator)[3]);
+        dataBaseConection.SaveMessage(userId, conversationId, message);
     }
     private void CreateGroup(string[] usersId) {
         //CREAR EL GRUPO EN LA BASE DE DATOS
         dataBaseConection.SaveGroup(usersId);
-        //ESPERAR A LA CONFIRMACIÓN
         //ENVIAR LA NUEVA CONVERSACIÓN A TODOS LOS USUARIOS QUE ESTÉN CONECTADOS
     }
     private void LogOut(string Id) {
@@ -77,7 +76,7 @@ public class StandarUserHandler : UserHandler {
         conectedUsers.Remove(conectedUsers.Where(n => n.Id.Equals(Id)).First());
     }
 
-    public override bool UserIsAlreadyConected(in string Id) => true; //conectedUsers.Select(n => n.Id).Contains(Id);
+    public override bool UserIsAlreadyConected(in string Id) => conectedUsers.Select(n => n.Id).Contains(Id);
 
     public override bool UserIsAlreadyConected(in TcpClient socket) => conectedUsers.Select(n => n.Client).Contains(socket);
 
@@ -89,6 +88,9 @@ public class StandarUserHandler : UserHandler {
     //STOLEN CODE
     public override void SendMsg(Stream stream, string msg)
     {
+        //ADDED BY ME
+        msg = $" \"Message\": {{ {msg} }}";
+
         // NetworkStream stream = client.GetStream();
         Queue<string> que = new Queue<string>(msg.SplitInGroups(125));
         int len = que.Count;

@@ -71,7 +71,7 @@ class ConectionHandler {
     private void LogIn(string Id, string password, TcpClient socket) {
         //COMPROBAR SI EL USUARIO NO ESTÁ CONECTADO
         //COMPROBAR SI LAS CREDENCIALES DEL USUARIO SON CORRECTAS
-        if (!userHandler.UserIsAlreadyConected(Id) && userHandler.dataBaseConection.CheckCredentials(Id, password.Encrypt())) {
+        if (!(userHandler.UserIsAlreadyConected(Id)) && userHandler.dataBaseConection.CheckCredentials(Id, password.Encrypt())) {
         //SI TODO LO ANTERIOR ES CORRECTO:
             //GUARDAR NUEVO USUARIO EN LA LISTA DE USUARIOS CONECTADOS, Y AVISAR AL USUARIO DE QUE SE HA CONECTADO
             userHandler.AddUser(Id, socket);
@@ -108,7 +108,7 @@ class ConectionHandler {
             string s = Encoding.UTF8.GetString(bytes);
 
             if (Regex.IsMatch(s, "^GET", RegexOptions.IgnoreCase)) {
-                Console.WriteLine("=====Handshaking from client=====\n{0}", s);
+                // Console.WriteLine("=====Handshaking from client=====\n{0}", s);
 
                 // 1. Obtain the value of the "Sec-WebSocket-Key" request header without any leading or trailing whitespace
                 // 2. Concatenate it with "258EAFA5-E914-47DA-95CA-C5AB0DC85B11" (a special GUID specified by RFC 6455)
@@ -149,7 +149,7 @@ class ConectionHandler {
                 }
 
                 if (msglen == 0) {
-                    Console.WriteLine("msglen == 0");
+                    // Console.WriteLine("msglen == 0");
                 } else if (mask) {
                     byte[] decoded = new byte[msglen];
                     byte[] masks = new byte[4] { bytes[offset], bytes[offset + 1], bytes[offset + 2], bytes[offset + 3] };
@@ -159,7 +159,7 @@ class ConectionHandler {
                         decoded[i] = (byte)(bytes[offset + (int)i] ^ masks[i % 4]);
 
                     return Encoding.UTF8.GetString(decoded);
-                } else
+                } else 
                     Console.WriteLine("mask bit not set");
                     return null;
             }

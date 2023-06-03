@@ -1215,24 +1215,26 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\goro1\\.nuget\\packages\\": {}
+    "C:\\Users\\Yllum\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\goro1\\Desktop\\ProyectoJuego\\Server\\ProyectoJuegoAldeas.csproj",
+      "projectUniqueName": "C:\\Users\\Yllum\\Desktop\\REPOSITORIOS\\ProyectoMiniJuegos\\Server\\ProyectoJuegoAldeas.csproj",
       "projectName": "ProyectoJuegoAldeas",
-      "projectPath": "C:\\Users\\goro1\\Desktop\\ProyectoJuego\\Server\\ProyectoJuegoAldeas.csproj",
-      "packagesPath": "C:\\Users\\goro1\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\goro1\\Desktop\\ProyectoJuego\\Server\\obj\\",
+      "projectPath": "C:\\Users\\Yllum\\Desktop\\REPOSITORIOS\\ProyectoMiniJuegos\\Server\\ProyectoJuegoAldeas.csproj",
+      "packagesPath": "C:\\Users\\Yllum\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Yllum\\Desktop\\REPOSITORIOS\\ProyectoMiniJuegos\\Server\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\goro1\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Yllum\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1272,7 +1274,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
       }
     }
   }

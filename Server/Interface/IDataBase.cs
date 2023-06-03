@@ -4,7 +4,7 @@
 public interface IDataBase {
     public string[] FindUsersFromConversation(string conversationId, string userId);
     public bool UserExists(string Nickname);
-    public string[] GetMessages(string conversationId, int amount);
+    public string[] GetMessages(string conversationId, int amount, char separator);
     public string[] GetConversations(string userId);
     public void SaveMessage(string sender, string destination, string message);
     public void SaveGroup(string[] users);
