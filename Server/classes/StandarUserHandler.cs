@@ -50,9 +50,9 @@ public class StandarUserHandler : UserHandler {
         foreach(string c in conversations) {
             //DE CADA UNA DE LAS CONVERSACIONES, OBTENER LOS ÚLTIMOS N MENSAJES
             //DEVOLVER TODAS LAS CONVERSACIONES AL USUARIO
-            string[] messages = dataBaseConection.GetMessages(c, 10, Separator);
-            foreach(string m in messages)
-                SendMsg(Id, string.Join(Separator, m));
+            string[][] messages = dataBaseConection.GetMessages(c, 10, Separator);
+            foreach(string[] m in messages)
+                SendMsg(Id, BuildJson(MessageStatus.NewMessage, m[0], ));
         }
     }
     private void SendGroupMsg(string conversationId, string userId, string message) {
@@ -83,7 +83,7 @@ public class StandarUserHandler : UserHandler {
     public override void SendMsg(TcpClient socket, string message) => SendMsg(socket.GetStream(), message);
     public override void SendMsg(string Id, string message) => SendMsg(conectedUsers.Where(n => n.Id.Equals(Id)).First().Stream, message);
     public override void AddUser(in string Id, in TcpClient socket) => conectedUsers.Add(new User(Id, socket));
-    
+    public override string BuildJson(MessageStatus Status, int Sender, string Nickname, int Destination, string Message) => $"\"Status\" : {(int)Status}, \"Sender\" : {Sender}, \"Nickname\" : \"{Nickname}\", \"Destination\" : {Destination}, \"Message\" : \"{Message}\"";
     
     //STOLEN CODE
     public override void SendMsg(Stream stream, string msg)

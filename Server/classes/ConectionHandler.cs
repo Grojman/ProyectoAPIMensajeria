@@ -76,11 +76,11 @@ class ConectionHandler {
             //GUARDAR NUEVO USUARIO EN LA LISTA DE USUARIOS CONECTADOS, Y AVISAR AL USUARIO DE QUE SE HA CONECTADO
             userHandler.AddUser(Id, socket);
             //ENVIARLE JUNTO CON EL AVISO EL ID DE SU USUARIO, PARA QUE NO TENER QUE UTILIZAR EL NICKNAME
-            userHandler.SendMsg(socket.GetStream(), $"Tu Id es {Id}");
+            userHandler.SendMsg(socket.GetStream(), userHandler.BuildJson(UserHandler.MessageStatus.LogIn, int.Parse(Id), "", 0, ""));
         } else {
         //EN CASO CONTRARIO:
             //AVISAR DEL ERROR
-            userHandler.SendMsg(socket.GetStream(), "Las credenciales no son correctas"); 
+            userHandler.SendMsg(socket.GetStream(), userHandler.BuildJson(UserHandler.MessageStatus.FailedLogIn, 0, "", 0, "Las credenciales no son correctas. Comprueba tu usuario y contraseña y vuelve a intentarlo.")); 
         }  
     }
 
@@ -93,13 +93,14 @@ class ConectionHandler {
             //AÑADIRLO COMO USUARIO CONECTADO
             userHandler.AddUser(userHandler.dataBaseConection.FromNicknameToId(Nickname), socket);
             //AVISAR AL CLIENTE DE QUE SE HA REGISTRADO CORRECTAMENTE
-            userHandler.SendMsg(socket, $"El usuario {Nickname} ha sido creado");
+            userHandler.SendMsg(socket, $"\"Status\": 1, ");
         } else {
         //EN CASO CONTRARIO:
             //AVISAR DEL ERROR AL CLIENTE
-            userHandler.SendMsg(socket.GetStream(), $"El nombre {Nickname} ya está cogido");
+            userHandler.SendMsg(socket.GetStream(), userHandler.BuildJson(UserHandler.MessageStatus.FailedLogIn, 0, "", 0, $"{Nickname} ya está escogido. Por favor, prueba con otro nombre."));
         }
     }
+    
 
     //NO TENGO NI IDEA DE CÓMO FUNCIONA, ESTÁ COPIADO DE UNA PÁGINA WEB. DEVUELVE NULO SI SE HA PRODUCIDO EL HANDSHAKING O LA MÁSCARA NO ESTÁ PUESTA
     private string? HandleMessages(TcpClient client, Stream stream) {

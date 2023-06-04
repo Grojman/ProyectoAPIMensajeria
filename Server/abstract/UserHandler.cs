@@ -14,4 +14,6 @@ public abstract class UserHandler {
     public abstract void SendMsg(Stream stream, string message);
     public abstract void SendMsg(TcpClient socket, string message);
     public abstract void AddUser(in string Id, in TcpClient socket);
+    public abstract string BuildJson(MessageStatus Status, int Sender, string Nickname, int Destination, string Message);
+    public enum MessageStatus {LogIn, FailedLogIn, LogOut, NewMessage}
 }

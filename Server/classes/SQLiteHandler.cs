@@ -53,9 +53,9 @@ public class SQLiteHandler : IDataBase
         return conversations.ToArray();
     }
 
-    public string[] GetMessages(string conversationId, int amount, char separator)
+    public string[][] GetMessages(string conversationId, int amount, char separator)
     {
-        var messages = new List<string>();
+        var messages = new List<string[]>();
         sql.Open();
         query = new SQLiteCommand($"SELECT * FROM MESSAGES WHERE DestinationId = @{conversationId} ORDER BY Date LIMIT @{amount}", sql);
         query.Parameters.Add($"@{conversationId}", System.Data.DbType.String);
@@ -64,7 +64,7 @@ public class SQLiteHandler : IDataBase
         query.Parameters[$"@{amount}"].Value = amount;
         var reader = query.ExecuteReader();
         while(reader.Read()) {
-            messages.Add($"{reader.GetInt64(0)}{separator}{reader.GetInt64(1)}{separator}{reader.GetString(2)}{separator}{reader.GetString(3)}");
+            messages.Add(new string[] {reader.GetInt64(0).ToString(), reader.GetInt64(1).ToString(), reader.GetString(2), reader.GetString(3)});
         }
         sql.Close();
         return messages.ToArray();
