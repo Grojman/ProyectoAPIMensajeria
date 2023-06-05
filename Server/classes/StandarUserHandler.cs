@@ -7,8 +7,6 @@ public class StandarUserHandler : UserHandler {
     public override void HandleMessage(in string[] message)
     {
         /*
-           header/senderId/sendernickname/message
-
             Posible headers:
             
             1. User needs messages to fill website
@@ -17,13 +15,7 @@ public class StandarUserHandler : UserHandler {
             4. User want's to create a group
             5. User log's out
 
-            Every single message starts with the header and the user id
-
-
             if a user wants to chat with someone new, It will be client who will check wheter the conversation has already started or not
-            Otherwise, it behaves the same as a normal message
-            
-            Messages will have the nickname of the person, so client can identify them easily
         */
         switch(message[0]) {
             case "get-msgs":
@@ -44,24 +36,25 @@ public class StandarUserHandler : UserHandler {
         }
     }
     private void SendData(string Id) {
-        SendMsg(Id, "Enviando mensajes!");
         //OBTENER TODAS LAS CONVERSACIONES
-        string[] conversations = dataBaseConection.GetConversations(Id);
-        foreach(string c in conversations) {
+        List<GroupData> conversations = dataBaseConection.GetConversations(Id);
+        foreach(GroupData g in conversations) {
+            //MANDAR UN MENSAJE INDICANDO QEU CREE UNA CONVERSACIÓN NUEVA
+            SendMsg(Id, g.ToJson(), MessageStatus.NewChat);
             //DE CADA UNA DE LAS CONVERSACIONES, OBTENER LOS ÚLTIMOS N MENSAJES
             //DEVOLVER TODAS LAS CONVERSACIONES AL USUARIO
-            string[][] messages = dataBaseConection.GetMessages(c, 10, Separator);
-            foreach(string[] m in messages)
-                SendMsg(Id, BuildJson(MessageStatus.NewMessage, m[0], ));
+            List<MessageData> messages = dataBaseConection.GetMessages(g.Id.ToString(), 10, Separator); //EL NÚMERO 10 SE DEBERÁ PARAMETRIZAR EN EL FUTURO
+            foreach(MessageData m in messages)
+                SendMsg(Id, m.ToJson(), MessageStatus.NewMessage);
         }
     }
     private void SendGroupMsg(string conversationId, string userId, string message) {
         //PEDIRLE A LA BASE DE DATOS TODOS LOS USUARIOS QUE PARTICIPEN EN LA CONVERSACION
-        string[] users = dataBaseConection.FindUsersFromConversation(conversationId, userId);
+        List<UserData> users = dataBaseConection.FindUsersFromConversation(conversationId, userId);
             //A CADA UNO DE LOS USUARIOS (QUE ESTÉN CONECTADOS), ENVIARLE EL MENSAJE
-        foreach(string id in users) {
-            if (UserIsAlreadyConected(id))
-                SendMsg(id, message);
+        foreach(UserData u in users) {
+            if (UserIsAlreadyConected(u.Id.ToString()))
+                SendMsg(u.Id.ToString(), message, MessageStatus.NewMessage);
         }
         //REGISTRAR MENSAJE EN LA CONVERSACION
         dataBaseConection.SaveMessage(userId, conversationId, message);
@@ -80,16 +73,15 @@ public class StandarUserHandler : UserHandler {
 
     public override bool UserIsAlreadyConected(in TcpClient socket) => conectedUsers.Select(n => n.Client).Contains(socket);
 
-    public override void SendMsg(TcpClient socket, string message) => SendMsg(socket.GetStream(), message);
-    public override void SendMsg(string Id, string message) => SendMsg(conectedUsers.Where(n => n.Id.Equals(Id)).First().Stream, message);
+    public override void SendMsg(TcpClient socket, string message, MessageStatus m) => SendMsg(socket.GetStream(), message, m);
+    public override void SendMsg(string Id, string message, MessageStatus m) => SendMsg(conectedUsers.Where(n => n.Id.Equals(Id)).First().Stream, message, m);
     public override void AddUser(in string Id, in TcpClient socket) => conectedUsers.Add(new User(Id, socket));
-    public override string BuildJson(MessageStatus Status, int Sender, string Nickname, int Destination, string Message) => $"\"Status\" : {(int)Status}, \"Sender\" : {Sender}, \"Nickname\" : \"{Nickname}\", \"Destination\" : {Destination}, \"Message\" : \"{Message}\"";
     
     //STOLEN CODE
-    public override void SendMsg(Stream stream, string msg)
+    public override void SendMsg(Stream stream, string msg, MessageStatus m)
     {
         //ADDED BY ME
-        msg = $" \"Message\": {{ {msg} }}";
+        msg = $"{{\"Status\" : {(int)m}, {msg}}}";
 
         // NetworkStream stream = client.GetStream();
         Queue<string> que = new Queue<string>(msg.SplitInGroups(125));

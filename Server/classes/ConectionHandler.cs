@@ -76,11 +76,11 @@ class ConectionHandler {
             //GUARDAR NUEVO USUARIO EN LA LISTA DE USUARIOS CONECTADOS, Y AVISAR AL USUARIO DE QUE SE HA CONECTADO
             userHandler.AddUser(Id, socket);
             //ENVIARLE JUNTO CON EL AVISO EL ID DE SU USUARIO, PARA QUE NO TENER QUE UTILIZAR EL NICKNAME
-            userHandler.SendMsg(socket.GetStream(), userHandler.BuildJson(UserHandler.MessageStatus.LogIn, int.Parse(Id), "", 0, ""));
+            userHandler.SendMsg(socket.GetStream(), $"\"Id\" : \"{Id}\"", UserHandler.MessageStatus.LogIn);
         } else {
         //EN CASO CONTRARIO:
             //AVISAR DEL ERROR
-            userHandler.SendMsg(socket.GetStream(), userHandler.BuildJson(UserHandler.MessageStatus.FailedLogIn, 0, "", 0, "Las credenciales no son correctas. Comprueba tu usuario y contraseña y vuelve a intentarlo.")); 
+            userHandler.SendMsg(socket.GetStream(), "\"ErrorMessage\" : \"El inicio de sesión ha fallado. Por favor, inténtalo de nuevo\"", UserHandler.MessageStatus.FailedLogIn); 
         }  
     }
 
@@ -93,11 +93,11 @@ class ConectionHandler {
             //AÑADIRLO COMO USUARIO CONECTADO
             userHandler.AddUser(userHandler.dataBaseConection.FromNicknameToId(Nickname), socket);
             //AVISAR AL CLIENTE DE QUE SE HA REGISTRADO CORRECTAMENTE
-            userHandler.SendMsg(socket, $"\"Status\": 1, ");
+            userHandler.SendMsg(socket, $"\"Id\" : \"{userHandler.dataBaseConection.FromNicknameToId(Nickname)}\"", UserHandler.MessageStatus.LogIn);
         } else {
         //EN CASO CONTRARIO:
             //AVISAR DEL ERROR AL CLIENTE
-            userHandler.SendMsg(socket.GetStream(), userHandler.BuildJson(UserHandler.MessageStatus.FailedLogIn, 0, "", 0, $"{Nickname} ya está escogido. Por favor, prueba con otro nombre."));
+            userHandler.SendMsg(socket.GetStream(), $"\"ErrorMessage\" : \"{Nickname} ya está escogido. Por favor, prueba con otro nombre.\"", UserHandler.MessageStatus.FailedLogIn);
         }
     }
     

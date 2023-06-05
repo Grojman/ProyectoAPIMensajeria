@@ -20,54 +20,55 @@ public class SQLiteHandler : IDataBase
             throw new IDataBase.DataBaseConectionException($"Se ha producido un error al intentar conectarse a la base de datos. Ruta: {dbPath}");
         }
     }
-    public string[] FindUsersFromConversation(string conversationId, string userId)
+    public List<UserData> FindUsersFromConversation(string conversationId, string userId)
     {
-        var users = new List<string>();
+        var users = new List<UserData>();
         sql.Open();
-        query = new SQLiteCommand($"SELECT UserId FROM GROUPS WHERE GroupId = @{conversationId} AND UserId != @{userId}", sql);
-        query.Parameters.Add($"@{conversationId}", System.Data.DbType.String);
-        query.Parameters[$"@{conversationId}"].Value = conversationId;
-        query.Parameters.Add($"@{userId}", System.Data.DbType.String);
-        query.Parameters[$"@{userId}"].Value = userId;
+        query = new SQLiteCommand($"SELECT GROUPS.UserId, USERS.Nickname FROM GROUPS JOIN USERS ON GROUPS.UserId = USERS.Id WHERE GroupId = @conversationId AND UserId != @userId", sql);
+        query.Parameters.Add($"@conversationId", System.Data.DbType.String);
+        query.Parameters[$"@conversationId"].Value = conversationId;
+        query.Parameters.Add($"@userId", System.Data.DbType.String);
+        query.Parameters[$"@userId"].Value = userId;
         var reader = query.ExecuteReader();
         while(reader.Read()) {
-            users.Append(reader.GetInt64(0).ToString());
+            users.Add(new UserData((int)reader.GetInt64(0), reader.GetString(1)));
         }
         sql.Close();
-        return users.ToArray();
+        return users;
     }
 
-    public string[] GetConversations(string userId)
+    public List<GroupData> GetConversations(string userId)
     {
         //LAS CONVERASCIONES ENTRE DOS PERSONAS SE GUARDAN IGUAL QUE LAS CONVERSACIONES DE GRUPO
-        var conversations = new List<string>();
+        var conversations = new List<GroupData>();
         sql.Open();
-        query = new SQLiteCommand($"SELECT GroupId FROM GROUPS WHERE UserId = @userId", sql);
+        query = new SQLiteCommand($"SELECT GroupId, Name FROM GROUPS WHERE UserId = @userId", sql);
         query.Parameters.Add($"@userId", System.Data.DbType.Int64);
         query.Parameters[$"@userId"].Value = userId;
         var reader = query.ExecuteReader();
         while(reader.Read()) {
-            conversations.Add($"{reader.GetInt64(0)}");
+            int groupId = (int)reader.GetInt64(0);
+            conversations.Add(new GroupData(groupId, reader.GetString(1), FindUsersFromConversation(groupId.ToString(), userId)));
         }
         sql.Close();
-        return conversations.ToArray();
+        return conversations;
     }
 
-    public string[][] GetMessages(string conversationId, int amount, char separator)
+    public List<MessageData> GetMessages(string conversationId, int amount, char separator)
     {
-        var messages = new List<string[]>();
+        var messages = new List<MessageData>();
         sql.Open();
-        query = new SQLiteCommand($"SELECT * FROM MESSAGES WHERE DestinationId = @{conversationId} ORDER BY Date LIMIT @{amount}", sql);
+        query = new SQLiteCommand($"SELECT SenderId, DestinationId, Message, Date FROM MESSAGES WHERE DestinationId = @{conversationId} ORDER BY Date LIMIT @{amount}", sql);
         query.Parameters.Add($"@{conversationId}", System.Data.DbType.String);
         query.Parameters[$"@{conversationId}"].Value = conversationId;
         query.Parameters.Add($"@{amount}", System.Data.DbType.Int32);
         query.Parameters[$"@{amount}"].Value = amount;
         var reader = query.ExecuteReader();
         while(reader.Read()) {
-            messages.Add(new string[] {reader.GetInt64(0).ToString(), reader.GetInt64(1).ToString(), reader.GetString(2), reader.GetString(3)});
+            messages.Add(new MessageData((int)reader.GetInt64(0), (int)reader.GetInt64(1), reader.GetString(2), reader.GetString(3)));
         }
         sql.Close();
-        return messages.ToArray();
+        return messages;
     }
 
     public void SaveGroup(string[] users) {

@@ -2,10 +2,11 @@
 /// Interface to interact with the database from wich we are taking user's data & messages
 /// </summary>
 public interface IDataBase {
-    public string[] FindUsersFromConversation(string conversationId, string userId);
+    //ALL OF THE string[][] should be replaced with classes
+    public List<UserData> FindUsersFromConversation(string conversationId, string userId);
     public bool UserExists(string Nickname);
-    public string[][] GetMessages(string conversationId, int amount, char separator);
-    public string[] GetConversations(string userId);
+    public List<MessageData> GetMessages(string conversationId, int amount, char separator);
+    public List<GroupData> GetConversations(string userId);
     public void SaveMessage(string sender, string destination, string message);
     public void SaveGroup(string[] users);
     public void SaveUser(string Nickname, string Password);
