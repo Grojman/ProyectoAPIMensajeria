@@ -5,5 +5,5 @@ public class UserData {
         Id = id;
         Nickname = nickname;
     }
-    public string ToJson() => $" [ \"UserId\" : \"{Id}\", \"Nickname\" : \"{Nickname}\" ] ";
+    public string ToJson() => $" {{ \"UserId\" : \"{Id}\", \"Nickname\" : \"{Nickname}\" }} ";
 }

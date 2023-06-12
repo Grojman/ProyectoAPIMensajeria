@@ -39,7 +39,7 @@ public class SQLiteHandler : IDataBase
 
     public List<GroupData> GetConversations(string userId)
     {
-        //LAS CONVERASCIONES ENTRE DOS PERSONAS SE GUARDAN IGUAL QUE LAS CONVERSACIONES DE GRUPO
+        //CHAT BETWEEN TWO PEOPLE IS STORED AS A GROUP
         var conversations = new List<GroupData>();
         sql.Open();
         query = new SQLiteCommand($"SELECT GroupId, Name FROM GROUPS WHERE UserId = @userId", sql);
@@ -48,9 +48,12 @@ public class SQLiteHandler : IDataBase
         var reader = query.ExecuteReader();
         while(reader.Read()) {
             int groupId = (int)reader.GetInt64(0);
-            conversations.Add(new GroupData(groupId, reader.GetString(1), FindUsersFromConversation(groupId.ToString(), userId)));
+            conversations.Add(new GroupData(groupId, reader.GetString(1)));
         }
         sql.Close();
+        foreach(GroupData g in conversations) {
+            g.Users = FindUsersFromConversation(g.Id.ToString(), userId);
+        }
         return conversations;
     }
 
