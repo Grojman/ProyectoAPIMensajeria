@@ -1,0 +1,56 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+main {
+    min-height: 100vh;
+    max-width: 100vw;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+form, fieldset {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+form {
+    justify-content: space-around;
+    width: 70vw;
+    height: 70vh;
+
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(0,100,99,1) 0%, rgba(0,195,222,1) 100%);
+}
+fieldset {
+    height: 80%;
+    width: 80%;
+}
+input {
+    width: 80%;
+    height: 10%;
+
+    border-radius: 5px;
+
+    padding-left: 1vw;
+}
+button {
+    width: 18vw;
+    height: 5vh;
+
+    border-radius: 10px;
+}
+fieldset > div {
+    width: 80%;
+    display: flex;
+    justify-content: space-around;
+}
+#error {
+    background-color: red;
+    color: rgb(169, 0, 0);
+}
