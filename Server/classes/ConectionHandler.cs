@@ -80,7 +80,7 @@ class ConectionHandler {
         } else {
         //EN CASO CONTRARIO:
             //AVISAR DEL ERROR
-            userHandler.SendMsg(socket.GetStream(), "\"ErrorMessage\" : \"El inicio de sesión ha fallado. Por favor, inténtalo de nuevo\"", UserHandler.MessageStatus.FailedLogIn); 
+            userHandler.SendMsg(socket.GetStream(), "\"ErrorMessage\" : \"Las credenciales no son correctas, o ya existe una sesión con este mismo usuario abierta.\"", UserHandler.MessageStatus.FailedLogIn); 
         }  
     }
 
